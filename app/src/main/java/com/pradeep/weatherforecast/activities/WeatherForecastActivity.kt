@@ -6,8 +6,6 @@ import android.app.AlarmManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.location.Address
-import android.location.Geocoder
 import android.location.Location
 import android.location.LocationManager
 import android.net.Uri
@@ -25,6 +23,7 @@ import com.google.android.gms.location.*
 import com.google.android.material.snackbar.Snackbar
 import com.pradeep.weatherforecast.R
 import com.pradeep.weatherforecast.utils.AppSharedPrefHandler
+import com.pradeep.weatherforecast.utils.AppUtils.getAddressFromLatLng
 import com.pradeep.weatherforecast.viewmodels.WeatherInfoViewModel
 import kotlinx.android.synthetic.main.activity_weather_forecast.*
 import java.text.DateFormat
@@ -173,8 +172,7 @@ class WeatherForecastActivity : AppCompatActivity() {
                             latitude = location.latitude
                             longitude = location.longitude
                             tvCurLocAddr.text = getAddressFromLatLng(
-                                location.latitude,
-                                location.longitude
+                                this@WeatherForecastActivity, location.latitude, location.longitude
                             ) ?: ""
 
                             if (AppSharedPrefHandler.getSkyState() == null) {
@@ -239,7 +237,10 @@ class WeatherForecastActivity : AppCompatActivity() {
             latitude = location.latitude
             longitude = location.longitude
             tvCurLocLatLng.text = "${location.latitude}, ${location.longitude}"
-            tvCurLocAddr.text = getAddressFromLatLng(location.latitude, location.longitude) ?: ""
+            tvCurLocAddr.text = getAddressFromLatLng(
+                this@WeatherForecastActivity,
+                location.latitude, location.longitude
+            ) ?: ""
 
             if (AppSharedPrefHandler.getSkyState() == null) {
                 // make this call only if data is not there in shared preference
@@ -251,25 +252,5 @@ class WeatherForecastActivity : AppCompatActivity() {
         }
     }
 
-    fun getAddressFromLatLng(
-        latitude: Double?,
-        longitude: Double?
-    ): String? {
-        var location: String? = null
-        try {
-            var addresses: List<Address>? = null
-            val geocoder: Geocoder = Geocoder(this, Locale.getDefault())
 
-            // Here 1 represent max location result to returned, by documents it recommended 1 to 5
-            addresses = geocoder.getFromLocation(latitude!!, longitude!!, 1)
-            if (addresses != null) {
-                // If any additional address line present than only, check with max available address
-                // lines by getMaxAddressLineIndex()
-                location = addresses[0].getAddressLine(0)
-            }
-        } catch (ex: Exception) {
-            Log.e("log", "Exception in getAddressFromLatLng()", ex)
-        }
-        return location
-    }
 }

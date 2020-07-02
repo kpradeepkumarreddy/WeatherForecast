@@ -107,13 +107,11 @@ class WeatherForecastActivity : AppCompatActivity() {
 
     private fun checkPermissions(): Boolean {
         return ActivityCompat.checkSelfPermission(
+            this, Manifest.permission.ACCESS_COARSE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
             this,
-            Manifest.permission.ACCESS_COARSE_LOCATION
-        ) == PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.ACCESS_FINE_LOCATION
-                ) == PackageManager.PERMISSION_GRANTED
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
     }
 
     private fun requestPermissions() {
@@ -124,19 +122,6 @@ class WeatherForecastActivity : AppCompatActivity() {
             ),
             PERMISSION_ID
         )
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int, permissions: Array<String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == PERMISSION_ID) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Granted. Start getting the location information
-                Log.d("log", "onRequestPermissionsResult()")
-            }
-        }
     }
 
     private fun isLocationEnabled(): Boolean {
@@ -198,8 +183,6 @@ class WeatherForecastActivity : AppCompatActivity() {
                         intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
                         intent.data = uri
                         startActivity(intent)
-                        val toast = Toast.makeText(this, "Turn on location", Toast.LENGTH_LONG)
-                        toast.setGravity(Gravity.CENTER, 0, 0)
                         toast.show()
                     }
                     snackBar!!.show()
